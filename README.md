@@ -5,7 +5,8 @@ Seamless navigation between Neovim splits and TUIOS panes.
 The plugin first moves between Neovim splits. When the current split is at an edge, it emits a
 private terminal sequence that TUIOS can use to focus the adjacent TUIOS pane.
 
-Requires TUIOS with Neovim pane navigation support.
+Requires TUIOS with Neovim pane navigation support
+([PR](https://github.com/Gaurav-Gosain/tuios/pull/318)).
 
 [![Démo](assets/demo.gif)](assets/demo-sdr.mp4)
 
@@ -24,9 +25,8 @@ With lazy.nvim:
 
 ## Configuration
 
-The default mappings are `Alt+Left/Down/Up/Right` in normal mode, matching
-TUIOS's default terminal focus mappings. If you customize either project, keep
-the four directions aligned.
+The default mappings are `Alt+Left/Down/Up/Right` in normal mode, matching TUIOS's default terminal
+focus mappings. If you customize either project, keep the four directions aligned.
 
 ```lua
 require("tuios-nvim-navigator").setup({
