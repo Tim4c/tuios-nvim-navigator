@@ -9,6 +9,13 @@ navigator.setup({
 	end,
 })
 
+local events = {}
+for _, autocmd in ipairs(vim.api.nvim_get_autocmds({ group = "TuiosNvimNavigator" })) do
+	events[autocmd.event] = true
+end
+assert(events.VimResume, "VimResume should reannounce navigator state")
+assert(events.FocusGained, "FocusGained should reannounce navigator state")
+
 vim.cmd("vnew")
 local windows = vim.api.nvim_tabpage_list_wins(0)
 vim.api.nvim_set_current_win(windows[#windows])

@@ -34,6 +34,10 @@ local function send_boundary(direction)
 	send("focus", direction)
 end
 
+local function announce_active()
+	send("state", "active")
+end
+
 function M.navigate(direction)
 	local command = commands[direction]
 	if not command then
@@ -58,8 +62,12 @@ function M.setup(user_options)
 		end
 	end
 
-	send("state", "active")
+	announce_active()
 	local group = vim.api.nvim_create_augroup("TuiosNvimNavigator", { clear = true })
+	vim.api.nvim_create_autocmd({ "VimResume", "FocusGained" }, {
+		group = group,
+		callback = announce_active,
+	})
 	vim.api.nvim_create_autocmd("VimLeavePre", {
 		group = group,
 		callback = function()
