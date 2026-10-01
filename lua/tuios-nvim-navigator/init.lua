@@ -2,10 +2,10 @@ local M = {}
 
 local defaults = {
 	keymaps = {
-		left = "<C-h>",
-		down = "<C-j>",
-		up = "<C-k>",
-		right = "<C-l>",
+		left = "<A-Left>",
+		down = "<A-Down>",
+		up = "<A-Up>",
+		right = "<A-Right>",
 	},
 	modes = { "n" },
 	on_boundary = nil,

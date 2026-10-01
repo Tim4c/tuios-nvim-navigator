@@ -25,3 +25,8 @@ assert(#boundary == 0, "a Neovim split should handle left navigation")
 
 navigator.navigate("left")
 assert(vim.deep_equal(boundary, { "left" }), "a Neovim edge should signal TUIOS")
+
+navigator.setup()
+for _, lhs in ipairs({ "<A-Left>", "<A-Down>", "<A-Up>", "<A-Right>" }) do
+	assert(next(vim.fn.maparg(lhs, "n", false, true)) ~= nil, "default mapping missing: " .. lhs)
+end

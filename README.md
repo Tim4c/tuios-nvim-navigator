@@ -24,15 +24,17 @@ With lazy.nvim:
 
 ## Configuration
 
-The default mappings are `Ctrl+h/j/k/l` in normal mode:
+The default mappings are `Alt+Left/Down/Up/Right` in normal mode, matching
+TUIOS's default terminal focus mappings. If you customize either project, keep
+the four directions aligned.
 
 ```lua
 require("tuios-nvim-navigator").setup({
   keymaps = {
-    left = "<C-h>",
-    down = "<C-j>",
-    up = "<C-k>",
-    right = "<C-l>",
+    left = "<A-Left>",
+    down = "<A-Down>",
+    up = "<A-Up>",
+    right = "<A-Right>",
   },
 })
 ```
