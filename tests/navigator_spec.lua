@@ -26,6 +26,28 @@ assert(#boundary == 0, "a Neovim split should handle left navigation")
 navigator.navigate("left")
 assert(vim.deep_equal(boundary, { "left" }), "a Neovim edge should signal TUIOS")
 
+-- A float has no split neighbours, so it hands off instead of jumping into
+-- the window behind it.
+local before_float = vim.api.nvim_get_current_win()
+local float = vim.api.nvim_open_win(vim.api.nvim_create_buf(false, true), true, {
+	relative = "editor",
+	row = 1,
+	col = 1,
+	width = 10,
+	height = 3,
+})
+navigator.navigate("right")
+assert(vim.api.nvim_get_current_win() == float, "a float should not move to the window behind it")
+assert(vim.deep_equal(boundary, { "left", "right" }), "a float should signal TUIOS")
+vim.api.nvim_win_close(float, true)
+vim.api.nvim_set_current_win(before_float)
+
+-- focus() hands off without moving between Neovim windows first.
+navigator.focus("right")
+assert(vim.api.nvim_get_current_win() == before_float, "focus should not move between Neovim windows")
+assert(vim.deep_equal(boundary, { "left", "right", "right" }), "focus should signal TUIOS")
+assert(not pcall(navigator.focus, "sideways"), "focus should reject an unknown direction")
+
 navigator.setup()
 for _, lhs in ipairs({ "<A-Left>", "<A-Down>", "<A-Up>", "<A-Right>" }) do
 	assert(next(vim.fn.maparg(lhs, "n", false, true)) ~= nil, "default mapping missing: " .. lhs)

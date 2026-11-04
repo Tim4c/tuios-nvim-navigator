@@ -38,3 +38,25 @@ require("tuios-nvim-navigator").setup({
   },
 })
 ```
+
+To also navigate from terminal buffers, such as lazygit in a floating terminal, add terminal mode:
+
+```lua
+require("tuios-nvim-navigator").setup({
+  modes = { "n", "t" },
+})
+```
+
+From a floating window, the plugin hands focus to TUIOS directly, because a float has no Neovim
+splits next to it.
+
+### API
+
+- `require("tuios-nvim-navigator").navigate(direction)` moves between Neovim splits and asks TUIOS
+  to focus the adjacent pane at an edge.
+- `require("tuios-nvim-navigator").focus(direction)` asks TUIOS to focus the adjacent pane right
+  away. Use it for integrations that know they are at an edge, for example a file tree drawn in a
+  floating window.
+
+`direction` is `"left"`, `"down"`, `"up"` or `"right"`. TUIOS accepts the request only right after it
+forwarded the matching focus key to Neovim, so call these from the mapped keys.
