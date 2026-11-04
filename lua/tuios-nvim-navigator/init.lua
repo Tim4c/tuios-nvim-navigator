@@ -25,6 +25,12 @@ local function send(command, value)
 	io.stdout:flush()
 end
 
+local function check_direction(direction)
+	if not commands[direction] then
+		error("unknown direction: " .. tostring(direction))
+	end
+end
+
 local function send_boundary(direction)
 	if options.on_boundary then
 		options.on_boundary(direction)
@@ -38,14 +44,31 @@ local function announce_active()
 	send("state", "active")
 end
 
+-- A floating window has no split neighbours: `wincmd` from it lands in
+-- whatever window lies behind it instead of reaching an edge.
+local function is_floating()
+	return vim.api.nvim_win_get_config(0).relative ~= ""
+end
+
+---Ask TUIOS to focus the pane in `direction`, without moving between Neovim
+---windows first. Useful for integrations that know they are at an edge, such
+---as a file tree drawn in a floating window.
+---@param direction "left"|"down"|"up"|"right"
+function M.focus(direction)
+	check_direction(direction)
+	send_boundary(direction)
+end
+
 function M.navigate(direction)
-	local command = commands[direction]
-	if not command then
-		error("unknown direction: " .. tostring(direction))
+	check_direction(direction)
+
+	if is_floating() then
+		send_boundary(direction)
+		return
 	end
 
 	local before = vim.api.nvim_get_current_win()
-	vim.cmd(command)
+	vim.cmd(commands[direction])
 	if vim.api.nvim_get_current_win() == before then
 		send_boundary(direction)
 	end
