@@ -20,9 +20,19 @@ local commands = {
 	right = "wincmd l",
 }
 
+-- nvim_ui_send (Neovim 0.12+) writes to the terminal of the attached UI only:
+-- nothing reaches stdout when Neovim runs headless or with its output
+-- redirected (`nvim --headless ... | cmd` got the sequence as garbage), and it
+-- does not interleave with the TUI's own output. Older versions keep writing to
+-- stdout, but only while a UI is attached.
 local function send(command, value)
-	io.stdout:write("\27]7777;tuios-nvim-navigator;" .. command .. ";" .. value .. "\7")
-	io.stdout:flush()
+	local sequence = "\27]7777;tuios-nvim-navigator;" .. command .. ";" .. value .. "\7"
+	if vim.api.nvim_ui_send then
+		vim.api.nvim_ui_send(sequence)
+	elseif #vim.api.nvim_list_uis() > 0 then
+		io.stdout:write(sequence)
+		io.stdout:flush()
+	end
 end
 
 local function send_boundary(direction)
@@ -64,7 +74,9 @@ function M.setup(user_options)
 
 	announce_active()
 	local group = vim.api.nvim_create_augroup("TuiosNvimNavigator", { clear = true })
-	vim.api.nvim_create_autocmd({ "VimResume", "FocusGained" }, {
+	-- UIEnter: the TUI attaches after init.lua has run, so an announcement made
+	-- during setup() at startup has no UI to go to yet.
+	vim.api.nvim_create_autocmd({ "UIEnter", "VimResume", "FocusGained" }, {
 		group = group,
 		callback = announce_active,
 	})
